@@ -79,3 +79,9 @@ export default function Login() {
           <Link href="/registro" className="text-[#b8842a] hover:text-[#d4a848]">
             Regístrate
           </Link>
+        </p>
+
+      </div>
+    </main>
+  )
+}
