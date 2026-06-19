@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Relatos Oscuros',
   description: 'Terror y suspenso',
   other: {
-    'google-adsense-account': 'ca-pub-1793586690744453',
+    'google-adsense-account': ['ca-pub-1793586690744453'],
   },
 }
 
