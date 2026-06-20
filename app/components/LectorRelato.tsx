@@ -34,6 +34,7 @@ export default function LectorRelato({
     const [inmersivo, setInmersivo] = useState(false)
     const [progreso, setProgreso] = useState(0)
     const articuloRef = useRef<HTMLDivElement>(null)
+    const [modoClaro, setModoClaro] = useState(false)
 
     useEffect(() => {
         const guardado = localStorage.getItem('preferenciasLectura')
@@ -41,46 +42,47 @@ export default function LectorRelato({
             const prefs = JSON.parse(guardado)
             setTamano(prefs.tamano ?? 18)
             setFuente(prefs.fuente ?? 'serif')
+            setModoClaro(prefs.modoClaro ?? false)
         }
     }, [])
 
     useEffect(() => {
-        localStorage.setItem('preferenciasLectura', JSON.stringify({ tamano, fuente }))
-    }, [tamano, fuente])
+        localStorage.setItem('preferenciasLectura', JSON.stringify({ tamano, fuente, modoClaro }))
+    }, [tamano, fuente, modoClaro])
 
-  useEffect(() => {
-    function calcularProgreso() {
-      if (!articuloRef.current) return
-      const { top, height } = articuloRef.current.getBoundingClientRect()
-      const ventana = window.innerHeight
-      const inicio = top
-      const fin = top + height - ventana
+    useEffect(() => {
+        function calcularProgreso() {
+            if (!articuloRef.current) return
+            const { top, height } = articuloRef.current.getBoundingClientRect()
+            const ventana = window.innerHeight
+            const inicio = top
+            const fin = top + height - ventana
 
-      if (fin <= 0) {
-        setProgreso(100)
-        return
-      }
-      if (inicio >= 0) {
-        setProgreso(0)
-        return
-      }
+            if (fin <= 0) {
+                setProgreso(100)
+                return
+            }
+            if (inicio >= 0) {
+                setProgreso(0)
+                return
+            }
 
-      const avance = (-inicio / (fin - inicio)) * 100
-      setProgreso(Math.min(100, Math.max(0, avance)))
-    }
+            const avance = (-inicio / (fin - inicio)) * 100
+            setProgreso(Math.min(100, Math.max(0, avance)))
+        }
 
-    window.addEventListener('scroll', calcularProgreso)
-    calcularProgreso()
-    return () => window.removeEventListener('scroll', calcularProgreso)
-  }, [])
+        window.addEventListener('scroll', calcularProgreso)
+        calcularProgreso()
+        return () => window.removeEventListener('scroll', calcularProgreso)
+    }, [])
     return (
         <div>
-                 <div className="fixed top-16 left-0 right-0 h-[2px] bg-[#1f1a12] z-40">
-        <div
-          className="h-full bg-[#b02020] transition-all duration-150"
-          style={{ width: `${progreso}%` }}
-        />
-      </div>
+            <div className="fixed top-16 left-0 right-0 h-[2px] bg-[#1f1a12] z-40">
+                <div
+                    className="h-full bg-[#b02020] transition-all duration-150"
+                    style={{ width: `${progreso}%` }}
+                />
+            </div>
             <div className="flex items-center gap-3 mb-8 font-mono text-[10px] tracking-[0.15em] uppercase text-[#5c5040] flex-wrap">
                 <span>Texto:</span>
                 <button onClick={() => setTamano((t) => Math.max(14, t - 2))} className="border border-[#2e2518] px-2 py-1 hover:border-[#7a1515] hover:text-[#b02020]">A-</button>
@@ -98,6 +100,13 @@ export default function LectorRelato({
                 >
                     {inmersivo ? 'Salir de modo lectura' : 'Modo lectura inmersivo'}
                 </button>
+                <button
+                    onClick={() => setModoClaro((m) => !m)}
+                    className={`border px-3 py-1 transition-colors ${modoClaro ? 'border-[#b8842a] text-[#b8842a]' : 'border-[#2e2518] hover:border-[#7a1515] hover:text-[#b02020]'
+                        }`}
+                >
+                    {modoClaro ? '☀ Modo claro' : '☾ Modo oscuro'}
+                </button>
             </div>
 
             {!inmersivo && (
@@ -109,13 +118,19 @@ export default function LectorRelato({
 
             {!inmersivo && <AdSlot slot="2222222222" />}
 
-            <article
-            ref={articuloRef}
-                className={`leading-relaxed whitespace-pre-line text-[#a89878] ${fuente === 'serif' ? 'font-serif' : 'font-sans'}`}
-                style={{ fontSize: `${tamano}px` }}
+            <div
+                className={`transition-colors duration-300 ${modoClaro ? 'bg-[#f5efe0] border border-[#d8cba8] px-6 py-8 md:px-10 md:py-10' : ''
+                    }`}
             >
-                {relato.contenido}
-            </article>
+                <article
+                    ref={articuloRef}
+                    className={`leading-relaxed whitespace-pre-line ${fuente === 'serif' ? 'font-serif' : 'font-sans'} ${modoClaro ? 'text-[#3a2f1f]' : 'text-[#a89878]'
+                        }`}
+                    style={{ fontSize: `${tamano}px` }}
+                >
+                    {relato.contenido}
+                </article>
+            </div>
 
             {!inmersivo && (
                 <>
