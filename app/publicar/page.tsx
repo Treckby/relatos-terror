@@ -29,6 +29,7 @@ export default function Publicar() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [enviado, setEnviado] = useState(false)
+  const [etiquetasTexto, setEtiquetasTexto] = useState('')
 
   const router = useRouter()
 
@@ -56,6 +57,10 @@ export default function Publicar() {
     const slug = generarSlug(titulo)
     const tiempoLectura = Math.max(1, Math.round(contenido.split(' ').length / 200))
     const necesitaRevision = !user && requiereRevision
+    const etiquetas = etiquetasTexto
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter((e) => e.length > 0)
 
     const { error: insertError } = await supabase.from('relatos').insert({
       titulo,
@@ -63,6 +68,7 @@ export default function Publicar() {
       contenido,
       extracto,
       categoria,
+      etiquetas,
       tiempo_lectura: tiempoLectura,
       autor_id: user ? user.id : null,
       autor_nombre: user ? null : (seudonimo.trim() || 'Anónimo'),
@@ -148,6 +154,13 @@ export default function Publicar() {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
+        <input
+          type="text"
+          placeholder="Etiquetas separadas por comas (ej: casa embrujada, niños, pueblo)"
+          value={etiquetasTexto}
+          onChange={(e) => setEtiquetasTexto(e.target.value)}
+          className="bg-[#191410] border border-[#2e2518] text-[#a89878] px-4 py-3 outline-none focus:border-[#7a1515] font-mono text-sm"
+        />
 
         <textarea
           placeholder="Extracto breve (aparece en el catálogo)"

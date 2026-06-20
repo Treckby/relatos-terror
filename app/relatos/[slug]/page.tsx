@@ -89,9 +89,24 @@ export default async function Relato({
         ) : (
           <span>Por {nombreAutor}</span>
         )}
+        
         <span>·</span>
         <span>{relato.tiempo_lectura ? `${relato.tiempo_lectura} min de lectura` : ''}</span>
+        <span></span>
       </div>
+            {relato.etiquetas && relato.etiquetas.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-10">
+          {relato.etiquetas.map((tag: string) => (
+            <a
+              key={tag}
+              href={`/relatos?etiqueta=${encodeURIComponent(tag)}`}
+              className="font-mono text-[9px] tracking-[0.15em] uppercase text-[#5c5040] border border-[#2e2518] px-3 py-1 hover:border-[#b8842a] hover:text-[#b8842a] transition-colors"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
 
       <LectorRelato relato={relato} relacionados={relacionados || []} />
 

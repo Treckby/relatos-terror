@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 export default async function Relatos({
   searchParams,
 }: {
-   searchParams: Promise<{ categoria?: string; q?: string }>
+  searchParams: Promise<{ categoria?: string; q?: string; etiqueta?: string }>
 }) {
-  const { categoria, q } = await searchParams
+  const { categoria, q, etiqueta } = await searchParams
   const filtroActivo = categoria || 'Todos'
   const busqueda = q || ''
 
@@ -34,7 +34,9 @@ export default async function Relatos({
   if (busqueda) {
     query = query.ilike('titulo', `%${busqueda}%`)
   }
-
+ if (etiqueta) {
+    query = query.contains('etiquetas', [etiqueta])
+  }
   const { data: relatos } = await query
 
   return (
@@ -45,7 +47,7 @@ export default async function Relatos({
           Archivo de relatos
         </p>
         <h1 className="text-5xl font-serif text-[#ede5d0] italic">
-          Todos los relatos
+          {etiqueta ? `#${etiqueta}` : 'Todos los relatos'}
         </h1>
       </div>
       <form action="/relatos" className="mb-6">
