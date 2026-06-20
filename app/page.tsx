@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AdSlot from './components/AdSlot'
 
 export default async function Home() {
 
@@ -42,6 +43,10 @@ export default async function Home() {
           >
             Publicar el tuyo →
           </Link>
+        </div>
+
+        <div className="mt-16 w-full max-w-xl">
+          <AdSlot slot="4444444444" />
         </div>
 
       </div>

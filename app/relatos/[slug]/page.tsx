@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase'
 import { notFound } from 'next/navigation'
+import AdSlot from '../../components/AdSlot'
 
 export default async function Relato({
   params,
@@ -27,13 +28,17 @@ export default async function Relato({
         {relato.titulo}
       </h1>
 
-      <div className="flex items-center gap-4 mb-10 font-mono text-[10px] tracking-[0.15em] text-[#5c5040]">
+      <div className="flex items-center gap-4 mb-6 font-mono text-[10px] tracking-[0.15em] text-[#5c5040]">
         <span>{relato.tiempo_lectura ? `${relato.tiempo_lectura} min de lectura` : ''}</span>
       </div>
+
+      <AdSlot slot="2222222222" />
 
       <article className="text-lg text-[#a89878] leading-relaxed whitespace-pre-line font-serif">
         {relato.contenido}
       </article>
+
+      <AdSlot slot="3333333333" />
 
     </main>
   )

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
+import AdSlot from '../components/AdSlot'
 
 export default async function Relatos() {
   const { data: relatos } = await supabase
@@ -22,31 +23,33 @@ export default async function Relatos() {
       <div className="flex flex-col">
         {relatos && relatos.length > 0 ? (
           relatos.map((relato, i) => (
-            <Link
-              key={relato.id}
-              href={`/relatos/${relato.slug}`}
-              className="group flex gap-6 py-6 border-b border-[#1f1a12] hover:pl-2 transition-all"
-            >
-              <span className="font-mono text-[10px] text-[#2e2518] pt-1 min-w-[2rem]">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div className="flex-1">
-                <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#7a1515] block mb-2">
-                  {relato.categoria || 'Terror'}
+            <div key={relato.id}>
+              <Link
+                href={`/relatos/${relato.slug}`}
+                className="group flex gap-6 py-6 border-b border-[#1f1a12] hover:pl-2 transition-all"
+              >
+                <span className="font-mono text-[10px] text-[#2e2518] pt-1 min-w-[2rem]">
+                  {String(i + 1).padStart(2, '0')}
                 </span>
-                <h2 className="font-serif text-xl text-[#ede5d0] group-hover:text-[#b02020] transition-colors mb-2">
-                  {relato.titulo}
-                </h2>
-                {relato.extracto && (
-                  <p className="text-sm italic text-[#5c5040] leading-relaxed">
-                    {relato.extracto}
-                  </p>
-                )}
-              </div>
-              <span className="font-mono text-[10px] text-[#5c5040] pt-1 whitespace-nowrap">
-                {relato.tiempo_lectura ? `${relato.tiempo_lectura} min` : ''}
-              </span>
-            </Link>
+                <div className="flex-1">
+                  <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#7a1515] block mb-2">
+                    {relato.categoria || 'Terror'}
+                  </span>
+                  <h2 className="font-serif text-xl text-[#ede5d0] group-hover:text-[#b02020] transition-colors mb-2">
+                    {relato.titulo}
+                  </h2>
+                  {relato.extracto && (
+                    <p className="text-sm italic text-[#5c5040] leading-relaxed">
+                      {relato.extracto}
+                    </p>
+                  )}
+                </div>
+                <span className="font-mono text-[10px] text-[#5c5040] pt-1 whitespace-nowrap">
+                  {relato.tiempo_lectura ? `${relato.tiempo_lectura} min` : ''}
+                </span>
+              </Link>
+              {(i + 1) % 4 === 0 && <AdSlot slot="1111111111" />}
+            </div>
           ))
         ) : (
           <div className="py-20 text-center">
