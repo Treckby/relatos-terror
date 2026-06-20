@@ -1,7 +1,13 @@
 import Link from 'next/link'
 import AdSlot from './components/AdSlot'
+import { supabase } from './lib/supabase'
 
 export default async function Home() {
+    const { data: config } = await supabase
+    .from('configuracion')
+    .select('reto_mes')
+    .eq('id', 1)
+    .single()
 
   return (
     <main className="min-h-screen bg-[#080604] flex flex-col items-center justify-center text-center px-6 relative overflow-hidden">
@@ -29,6 +35,19 @@ export default async function Home() {
           <span className="font-mono text-[9px] tracking-[0.5em] uppercase">Entra si te atreves</span>
           <div className="w-20 h-px bg-[#2e2518]" />
         </div>
+                {config?.reto_mes && (
+          <a
+            href="/publicar"
+            className="mt-8 border border-[#3d3020] px-6 py-3 hover:border-[#b8842a] transition-colors group"
+          >
+            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#7a1515] block mb-1">
+              Reto del mes
+            </span>
+            <span className="font-serif italic text-[#ede5d0] group-hover:text-[#b8842a] transition-colors">
+              {config.reto_mes}
+            </span>
+          </a>
+        )}
 
         <div className="flex gap-4 mt-8">
           <Link

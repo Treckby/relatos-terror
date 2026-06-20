@@ -32,7 +32,8 @@ export default function Publicar() {
   const [etiquetasTexto, setEtiquetasTexto] = useState('')
 
   const [portadaArchivo, setPortadaArchivo] = useState<File | null>(null)
-const [portadaPreview, setPortadaPreview] = useState('')
+  const [portadaPreview, setPortadaPreview] = useState('')
+  const [retoMes, setRetoMes] = useState('')
 
   const router = useRouter()
 
@@ -44,20 +45,23 @@ const [portadaPreview, setPortadaPreview] = useState('')
 
     supabase
       .from('configuracion')
-      .select('requiere_revision')
+      .select('requiere_revision, reto_mes')
       .eq('id', 1)
       .single()
       .then(({ data }) => {
-        if (data) setRequiereRevision(data.requiere_revision)
+        if (data) {
+          setRequiereRevision(data.requiere_revision)
+          setRetoMes(data.reto_mes || '')
+        }
       })
   }, [])
   function handlePortada(e: React.ChangeEvent<HTMLInputElement>) {
-  const file = e.target.files?.[0]
-  if (file) {
-    setPortadaArchivo(file)
-    setPortadaPreview(URL.createObjectURL(file))
+    const file = e.target.files?.[0]
+    if (file) {
+      setPortadaArchivo(file)
+      setPortadaPreview(URL.createObjectURL(file))
+    }
   }
-}
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -145,6 +149,14 @@ const [portadaPreview, setPortadaPreview] = useState('')
       <h1 className="font-serif text-4xl italic text-[#ede5d0] mb-4">
         Publicar relato
       </h1>
+      {retoMes && (
+        <div className="border border-[#3d3020] px-5 py-4 mb-8">
+          <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#7a1515] block mb-1">
+            Inspírate con el reto del mes
+          </span>
+          <span className="font-serif italic text-[#ede5d0]">{retoMes}</span>
+        </div>
+      )}
 
       {!user && (
         <p className="text-[#5c5040] italic text-sm mb-8">
@@ -183,7 +195,7 @@ const [portadaPreview, setPortadaPreview] = useState('')
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
-               <div>
+        <div>
           <label className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] block mb-2">
             Imagen de portada (opcional)
           </label>
