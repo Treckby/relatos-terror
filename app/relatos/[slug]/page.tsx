@@ -4,6 +4,8 @@ import AdSlot from '../../components/AdSlot'
 import Comentarios from '../../components/Comentarios'
 import type { Metadata } from 'next'
 import LikeButton from '../../components/LikeButton'
+import Link from 'next/link'
+import Compartir from '../../components/Compartir'
 
 export async function generateMetadata({
   params,
@@ -45,7 +47,12 @@ export default async function Relato({
     .single()
 
   if (!relato) notFound()
-
+  const { data: relacionados } = await supabase
+    .from('relatos')
+    .select('*')
+    .eq('categoria', relato.categoria)
+    .neq('id', relato.id)
+    .limit(3)
   return (
     <main className="min-h-screen bg-[#080604] pt-28 pb-20 px-6 max-w-2xl mx-auto">
 
@@ -62,6 +69,7 @@ export default async function Relato({
       </div>
             <div className="mb-8">
         <LikeButton relatoId={relato.id} />
+         <Compartir titulo={relato.titulo} />
       </div>
 
       <AdSlot slot="2222222222" />
@@ -73,7 +81,29 @@ export default async function Relato({
       <AdSlot slot="3333333333" />
 
       <Comentarios relatoId={relato.id} />
-
+      {relacionados && relacionados.length > 0 && (
+        <section className="mt-16 pt-10 border-t border-[#1f1a12]">
+          <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#7a1515] mb-6">
+            También podría interesarte
+          </p>
+          <div className="flex flex-col gap-5">
+            {relacionados.map((r) => (
+              <Link
+                key={r.id}
+                href={`/relatos/${r.slug}`}
+                className="group block py-4 border-b border-[#1f1a12] hover:pl-2 transition-all"
+              >
+                <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#7a1515] block mb-1">
+                  {r.categoria || 'Terror'}
+                </span>
+                <h3 className="font-serif text-lg text-[#ede5d0] group-hover:text-[#b02020] transition-colors">
+                  {r.titulo}
+                </h3>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   )
 }

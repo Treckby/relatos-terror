@@ -15,10 +15,11 @@ export const metadata: Metadata = {
 export default async function Relatos({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string }>
+   searchParams: Promise<{ categoria?: string; q?: string }>
 }) {
-  const { categoria } = await searchParams
+  const { categoria, q } = await searchParams
   const filtroActivo = categoria || 'Todos'
+  const busqueda = q || ''
 
   let query = supabase
     .from('relatos')
@@ -27,6 +28,10 @@ export default async function Relatos({
 
   if (filtroActivo !== 'Todos') {
     query = query.eq('categoria', filtroActivo)
+  }
+
+  if (busqueda) {
+    query = query.ilike('titulo', `%${busqueda}%`)
   }
 
   const { data: relatos } = await query
@@ -42,7 +47,16 @@ export default async function Relatos({
           Todos los relatos
         </h1>
       </div>
-
+      <form action="/relatos" className="mb-6">
+        {categoria && <input type="hidden" name="categoria" value={categoria} />}
+        <input
+          type="text"
+          name="q"
+          defaultValue={busqueda}
+          placeholder="Buscar relatos por título..."
+          className="w-full bg-[#191410] border border-[#2e2518] text-[#ede5d0] px-4 py-3 outline-none focus:border-[#7a1515] font-serif"
+        />
+      </form>
       <div className="flex flex-wrap gap-2 mb-10">
         {categorias.map((cat) => (
           <Link
