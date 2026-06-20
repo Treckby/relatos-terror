@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://loquacious-rolypoly-6d0a9f.netlify.app/sitemap.xml',
+    sitemap: 'https://historias-deterror.netlify.app/sitemap.xml',
   }
 }

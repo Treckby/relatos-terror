@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { supabase } from './lib/supabase'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://loquacious-rolypoly-6d0a9f.netlify.app/'
+  const baseUrl = 'https://historias-deterror.netlify.app/'
 
   const { data: relatos } = await supabase
     .from('relatos')
