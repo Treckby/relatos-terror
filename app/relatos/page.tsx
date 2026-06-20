@@ -2,11 +2,34 @@ import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 import AdSlot from '../components/AdSlot'
 
-export default async function Relatos() {
-  const { data: relatos } = await supabase
+const categorias = ['Todos', 'Terror', 'Suspenso', 'Misterio', 'Terror gótico', 'Folklore']
+
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Catálogo de relatos | Relatos Oscuros',
+  description: 'Explora relatos de terror, suspenso y misterio escritos por nuestra comunidad.',
+}
+
+
+export default async function Relatos({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string }>
+}) {
+  const { categoria } = await searchParams
+  const filtroActivo = categoria || 'Todos'
+
+  let query = supabase
     .from('relatos')
     .select('*')
     .order('created_at', { ascending: false })
+
+  if (filtroActivo !== 'Todos') {
+    query = query.eq('categoria', filtroActivo)
+  }
+
+  const { data: relatos } = await query
 
   return (
     <main className="min-h-screen bg-[#080604] pt-28 pb-20 px-6 max-w-3xl mx-auto">
@@ -18,6 +41,22 @@ export default async function Relatos() {
         <h1 className="text-5xl font-serif text-[#ede5d0] italic">
           Todos los relatos
         </h1>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-10">
+        {categorias.map((cat) => (
+          <Link
+            key={cat}
+            href={cat === 'Todos' ? '/relatos' : `/relatos?categoria=${encodeURIComponent(cat)}`}
+            className={`font-mono text-[10px] tracking-[0.2em] uppercase px-4 py-2 border transition-colors ${
+              filtroActivo === cat
+                ? 'border-[#b02020] text-[#b02020] bg-[#7a1515]/10'
+                : 'border-[#2e2518] text-[#5c5040] hover:border-[#7a1515] hover:text-[#b02020]'
+            }`}
+          >
+            {cat}
+          </Link>
+        ))}
       </div>
 
       <div className="flex flex-col">
@@ -54,13 +93,13 @@ export default async function Relatos() {
         ) : (
           <div className="py-20 text-center">
             <p className="font-serif text-2xl italic text-[#5c5040] mb-6">
-              Aún no hay relatos
+              No hay relatos en esta categoría
             </p>
             <Link
-              href="/publicar"
+              href="/relatos"
               className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#b02020] border border-[#7a1515] px-6 py-3 hover:bg-[#7a1515] hover:text-[#ede5d0] transition-colors inline-block"
             >
-              Sé el primero en publicar
+              Ver todos los relatos
             </Link>
           </div>
         )}

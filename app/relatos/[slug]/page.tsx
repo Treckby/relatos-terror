@@ -1,6 +1,33 @@
 import { supabase } from '../../lib/supabase'
 import { notFound } from 'next/navigation'
 import AdSlot from '../../components/AdSlot'
+import Comentarios from '../../components/Comentarios'
+import type { Metadata } from 'next'
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+
+  const { data: relato } = await supabase
+    .from('relatos')
+    .select('titulo, extracto, categoria')
+    .eq('slug', slug)
+    .single()
+
+  if (!relato) return { title: 'Relato no encontrado' }
+
+  return {
+    title: `${relato.titulo} | Relatos Oscuros`,
+    description: relato.extracto || `Un relato de ${relato.categoria || 'terror'} en Relatos Oscuros.`,
+    openGraph: {
+      title: relato.titulo,
+      description: relato.extracto || '',
+      type: 'article',
+    },
+  }
+}
 
 export default async function Relato({
   params,
@@ -39,6 +66,8 @@ export default async function Relato({
       </article>
 
       <AdSlot slot="3333333333" />
+
+      <Comentarios relatoId={relato.id} />
 
     </main>
   )

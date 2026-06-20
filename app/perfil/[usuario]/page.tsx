@@ -9,14 +9,12 @@ export default async function Perfil({
 }) {
   const { usuario } = await params
 
-  const { data: perfil,error } = await supabase
+  const { data: perfil } = await supabase
     .from('perfiles')
     .select('*')
     .eq('username', usuario)
     .single()
-  console.log('USUARIO BUSCADO:', usuario)
-  console.log('ERROR:', error)
-  console.log('PERFIL:', perfil)
+
   if (!perfil) notFound()
 
   const { data: relatos } = await supabase
