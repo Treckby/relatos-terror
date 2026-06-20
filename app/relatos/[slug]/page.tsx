@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import AdSlot from '../../components/AdSlot'
 import Comentarios from '../../components/Comentarios'
 import type { Metadata } from 'next'
+import LikeButton from '../../components/LikeButton'
+
 export async function generateMetadata({
   params,
 }: {
@@ -57,6 +59,9 @@ export default async function Relato({
 
       <div className="flex items-center gap-4 mb-6 font-mono text-[10px] tracking-[0.15em] text-[#5c5040]">
         <span>{relato.tiempo_lectura ? `${relato.tiempo_lectura} min de lectura` : ''}</span>
+      </div>
+            <div className="mb-8">
+        <LikeButton relatoId={relato.id} />
       </div>
 
       <AdSlot slot="2222222222" />

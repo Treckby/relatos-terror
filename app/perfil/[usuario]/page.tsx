@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
+import Image from 'next/image'
+import BotonEditarPerfil from '../../components/BotonEditarPerfil'
 
 export default async function Perfil({
   params,
@@ -17,6 +19,7 @@ export default async function Perfil({
 
   if (!perfil) notFound()
 
+
   const { data: relatos } = await supabase
     .from('relatos')
     .select('*')
@@ -27,8 +30,12 @@ export default async function Perfil({
     <main className="min-h-screen bg-[#080604] pt-28 pb-20 px-6 max-w-2xl mx-auto">
 
       <div className="border-b border-[#1f1a12] pb-8 mb-10">
-        <div className="w-16 h-16 rounded-full bg-[#191410] border border-[#2e2518] flex items-center justify-center font-serif text-2xl text-[#a89878] mb-4">
-          {perfil.username.charAt(0).toUpperCase()}
+               <div className="w-16 h-16 rounded-full bg-[#191410] border border-[#2e2518] overflow-hidden flex items-center justify-center font-serif text-2xl text-[#a89878] mb-4 relative">
+          {perfil.avatar_url ? (
+            <Image src={perfil.avatar_url} alt={perfil.username} fill className="object-cover" />
+          ) : (
+            perfil.username.charAt(0).toUpperCase()
+          )}
         </div>
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#7a1515] mb-2">
           Autor
@@ -39,6 +46,8 @@ export default async function Perfil({
         {perfil.bio && (
           <p className="text-[#a89878] italic leading-relaxed">{perfil.bio}</p>
         )}
+<BotonEditarPerfil perfilId={perfil.id} />
+        
       </div>
 
       <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-[#5c5040] mb-6">
