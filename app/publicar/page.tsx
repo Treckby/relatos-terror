@@ -11,7 +11,7 @@ function generarSlug(titulo: string) {
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
-    .replace(/\s+/g, '-')
+    .replace(/\s+/g, '-') + '-' + Math.random().toString(36).slice(2, 7)
 }
 
 const categorias = ['Terror', 'Suspenso', 'Misterio', 'Terror gótico', 'Folklore']
@@ -19,13 +19,16 @@ const categorias = ['Terror', 'Suspenso', 'Misterio', 'Terror gótico', 'Folklor
 export default function Publicar() {
   const [user, setUser] = useState<User | null>(null)
   const [checking, setChecking] = useState(true)
+  const [requiereRevision, setRequiereRevision] = useState(false)
 
   const [titulo, setTitulo] = useState('')
   const [extracto, setExtracto] = useState('')
   const [contenido, setContenido] = useState('')
   const [categoria, setCategoria] = useState(categorias[0])
+  const [seudonimo, setSeudonimo] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [enviado, setEnviado] = useState(false)
 
   const router = useRouter()
 
@@ -33,23 +36,26 @@ export default function Publicar() {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)
       setChecking(false)
-      if (!data.user) router.push('/login')
     })
-  }, [router])
+
+    supabase
+      .from('configuracion')
+      .select('requiere_revision')
+      .eq('id', 1)
+      .single()
+      .then(({ data }) => {
+        if (data) setRequiereRevision(data.requiere_revision)
+      })
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    if (!user) {
-      setError('Debes iniciar sesión')
-      setLoading(false)
-      return
-    }
-
     const slug = generarSlug(titulo)
     const tiempoLectura = Math.max(1, Math.round(contenido.split(' ').length / 200))
+    const necesitaRevision = !user && requiereRevision
 
     const { error: insertError } = await supabase.from('relatos').insert({
       titulo,
@@ -58,7 +64,9 @@ export default function Publicar() {
       extracto,
       categoria,
       tiempo_lectura: tiempoLectura,
-      autor_id: user.id,
+      autor_id: user ? user.id : null,
+      autor_nombre: user ? null : (seudonimo.trim() || 'Anónimo'),
+      estado: necesitaRevision ? 'pendiente' : 'publicado',
     })
 
     if (insertError) {
@@ -67,10 +75,31 @@ export default function Publicar() {
       return
     }
 
-    router.push(`/relatos/${slug}`)
+    if (necesitaRevision) {
+      setEnviado(true)
+      setLoading(false)
+    } else {
+      router.push(`/relatos/${slug}`)
+    }
   }
 
   if (checking) return null
+
+  if (enviado) {
+    return (
+      <main className="min-h-screen bg-[#080604] flex flex-col items-center justify-center text-center px-6">
+        <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#7a1515] mb-4">
+          Recibido
+        </p>
+        <h1 className="font-serif text-3xl italic text-[#ede5d0] mb-4">
+          Tu relato fue enviado
+        </h1>
+        <p className="text-[#a89878] italic max-w-md">
+          Quedará pendiente de revisión antes de publicarse en el sitio.
+        </p>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-[#080604] pt-28 pb-20 px-6 max-w-2xl mx-auto">
@@ -78,9 +107,16 @@ export default function Publicar() {
       <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#7a1515] mb-3">
         Comparte tu oscuridad
       </p>
-      <h1 className="font-serif text-4xl italic text-[#ede5d0] mb-10">
+      <h1 className="font-serif text-4xl italic text-[#ede5d0] mb-4">
         Publicar relato
       </h1>
+
+      {!user && (
+        <p className="text-[#5c5040] italic text-sm mb-8">
+          Puedes publicar sin crear una cuenta. Si quieres llevar registro de tus relatos y recibir comentarios en tu perfil,{' '}
+          <a href="/registro" className="text-[#b8842a] hover:text-[#d4a848] underline">crea una cuenta</a>.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
@@ -92,6 +128,16 @@ export default function Publicar() {
           required
           className="bg-[#191410] border border-[#2e2518] text-[#ede5d0] px-4 py-3 outline-none focus:border-[#7a1515] font-serif text-lg"
         />
+
+        {!user && (
+          <input
+            type="text"
+            placeholder="Tu nombre o seudónimo (opcional)"
+            value={seudonimo}
+            onChange={(e) => setSeudonimo(e.target.value)}
+            className="bg-[#191410] border border-[#2e2518] text-[#a89878] px-4 py-3 outline-none focus:border-[#7a1515] font-mono text-sm"
+          />
+        )}
 
         <select
           value={categoria}
