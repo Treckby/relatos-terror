@@ -44,9 +44,25 @@ export default async function Relato({
     .from('relatos')
     .select('*')
     .eq('slug', slug)
+    .eq('estado', 'publicado')
     .single()
 
   if (!relato) notFound()
+
+  let nombreAutor = relato.autor_nombre || 'Anónimo'
+  let usernameAutor: string | null = null
+  if (relato.autor_id) {
+    const { data: perfilAutor } = await supabase
+      .from('perfiles')
+      .select('username')
+      .eq('id', relato.autor_id)
+      .single()
+
+    if (perfilAutor) {
+      nombreAutor = perfilAutor.username
+      usernameAutor = perfilAutor.username
+    }
+  }
   const { data: relacionados } = await supabase
     .from('relatos')
     .select('*')
@@ -65,11 +81,19 @@ export default async function Relato({
       </h1>
 
       <div className="flex items-center gap-4 mb-6 font-mono text-[10px] tracking-[0.15em] text-[#5c5040]">
+        {usernameAutor ? (
+          <a href={`/perfil/${usernameAutor}`} className="text-[#b8842a] hover:text-[#d4a848]">
+            Por {nombreAutor}
+          </a>
+        ) : (
+          <span>Por {nombreAutor}</span>
+        )}
+        <span>·</span>
         <span>{relato.tiempo_lectura ? `${relato.tiempo_lectura} min de lectura` : ''}</span>
       </div>
-            <div className="mb-8">
+      <div className="mb-8">
         <LikeButton relatoId={relato.id} />
-         <Compartir titulo={relato.titulo} />
+        <Compartir titulo={relato.titulo} />
       </div>
 
       <AdSlot slot="2222222222" />

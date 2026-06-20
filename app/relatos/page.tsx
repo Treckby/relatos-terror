@@ -24,6 +24,7 @@ export default async function Relatos({
   let query = supabase
     .from('relatos')
     .select('*')
+    .eq('estado', 'publicado')
     .order('created_at', { ascending: false })
 
   if (filtroActivo !== 'Todos') {
