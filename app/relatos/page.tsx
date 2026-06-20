@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 import AdSlot from '../components/AdSlot'
+import Image from 'next/image'
 
 const categorias = ['Todos', 'Terror', 'Suspenso', 'Misterio', 'Terror gótico', 'Folklore']
 
@@ -87,6 +88,11 @@ export default async function Relatos({
                 <span className="font-mono text-[10px] text-[#2e2518] pt-1 min-w-[2rem]">
                   {String(i + 1).padStart(2, '0')}
                 </span>
+                                {relato.portada_url && (
+                  <div className="relative w-20 h-20 flex-shrink-0 border border-[#2e2518] overflow-hidden">
+                    <Image src={relato.portada_url} alt={relato.titulo} fill className="object-cover" />
+                  </div>
+                )}
                 <div className="flex-1">
                   <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#7a1515] block mb-2">
                     {relato.categoria || 'Terror'}

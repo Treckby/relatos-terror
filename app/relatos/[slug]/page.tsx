@@ -2,6 +2,7 @@ import { supabase } from '../../lib/supabase'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import LectorRelato from '../../components/LectorRelato'
+import Image from 'next/image'
 
 export async function generateMetadata({
   params,
@@ -72,7 +73,11 @@ export default async function Relato({
 
   return (
     <main className="min-h-screen bg-[#080604] pt-28 pb-20 px-6 max-w-2xl mx-auto">
-
+      {relato.portada_url && (
+        <div className="relative w-full h-64 md:h-80 mb-8 border border-[#2e2518] overflow-hidden">
+          <Image src={relato.portada_url} alt={relato.titulo} fill className="object-cover" />
+        </div>
+      )}
       <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#7a1515] block mb-4">
         {relato.categoria || 'Terror'}
       </span>

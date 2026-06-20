@@ -31,6 +31,9 @@ export default function Publicar() {
   const [enviado, setEnviado] = useState(false)
   const [etiquetasTexto, setEtiquetasTexto] = useState('')
 
+  const [portadaArchivo, setPortadaArchivo] = useState<File | null>(null)
+const [portadaPreview, setPortadaPreview] = useState('')
+
   const router = useRouter()
 
   useEffect(() => {
@@ -48,6 +51,13 @@ export default function Publicar() {
         if (data) setRequiereRevision(data.requiere_revision)
       })
   }, [])
+  function handlePortada(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0]
+  if (file) {
+    setPortadaArchivo(file)
+    setPortadaPreview(URL.createObjectURL(file))
+  }
+}
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -61,7 +71,25 @@ export default function Publicar() {
       .split(',')
       .map((e) => e.trim().toLowerCase())
       .filter((e) => e.length > 0)
+    let portadaUrl: string | null = null
 
+    if (portadaArchivo) {
+      const ext = portadaArchivo.name.split('.').pop()
+      const path = `${slug}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('portadas')
+        .upload(path, portadaArchivo, { upsert: true })
+
+      if (uploadError) {
+        setError(uploadError.message)
+        setLoading(false)
+        return
+      }
+
+      const { data: urlData } = supabase.storage.from('portadas').getPublicUrl(path)
+      portadaUrl = urlData.publicUrl
+    }
     const { error: insertError } = await supabase.from('relatos').insert({
       titulo,
       slug,
@@ -69,6 +97,7 @@ export default function Publicar() {
       extracto,
       categoria,
       etiquetas,
+      portada_url: portadaUrl,
       tiempo_lectura: tiempoLectura,
       autor_id: user ? user.id : null,
       autor_nombre: user ? null : (seudonimo.trim() || 'Anónimo'),
@@ -154,6 +183,20 @@ export default function Publicar() {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
+               <div>
+          <label className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] block mb-2">
+            Imagen de portada (opcional)
+          </label>
+          {portadaPreview && (
+            <img src={portadaPreview} alt="preview" className="w-full max-h-60 object-cover mb-3 border border-[#2e2518]" />
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePortada}
+            className="text-[#a89878] font-mono text-sm"
+          />
+        </div>
         <input
           type="text"
           placeholder="Etiquetas separadas por comas (ej: casa embrujada, niños, pueblo)"
