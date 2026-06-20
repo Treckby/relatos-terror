@@ -6,6 +6,7 @@ import LikeButton from './LikeButton'
 import Compartir from './Compartir'
 import Comentarios from './Comentarios'
 import AdSlot from './AdSlot'
+import GuardarButton from './GuardarButton'
 
 type Relato = {
   id: string
@@ -69,6 +70,7 @@ export default function LectorRelato({
       {!inmersivo && (
         <div className="mb-8">
           <LikeButton relatoId={relato.id} />
+          <GuardarButton relatoId={relato.id} />
         </div>
       )}
 

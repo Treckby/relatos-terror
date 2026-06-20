@@ -47,14 +47,21 @@ export default function Navbar() {
         </li>
 
         {user ? (
-          <li>
-            <button
-              onClick={handleLogout}
-              className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] hover:text-[#b02020] transition-colors"
-            >
-              Salir
-            </button>
-          </li>
+          <>
+            <li>
+              <Link href="/favoritos" className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] hover:text-[#b8842a] transition-colors">
+                Favoritos
+              </Link>
+            </li>
+            <li>
+              <button
+                onClick={handleLogout}
+                className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] hover:text-[#b02020] transition-colors"
+              >
+                Salir
+              </button>
+            </li>
+          </>
         ) : (
           <li>
             <Link href="/login" className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] hover:text-[#b8842a] transition-colors">
