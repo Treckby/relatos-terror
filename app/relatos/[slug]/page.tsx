@@ -44,6 +44,7 @@ export default async function Relato({
     .single()
 
   if (!relato) notFound()
+  await supabase.rpc('incrementar_vistas', { relato_id_param: relato.id })
 
   let nombreAutor = relato.autor_nombre || 'Anónimo'
   let usernameAutor: string | null = null

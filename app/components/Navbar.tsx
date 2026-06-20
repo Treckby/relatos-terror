@@ -39,6 +39,11 @@ export default function Navbar() {
             Relatos
           </Link>
         </li>
+        <li>
+          <Link href="/ranking" className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] hover:text-[#b8842a] transition-colors">
+            Ranking
+          </Link>
+        </li>
 
         <li>
           <Link href="/publicar" className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#b02020] border border-[#7a1515] px-4 py-2 hover:bg-[#7a1515] hover:text-[#ede5d0] transition-colors">
