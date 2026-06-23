@@ -195,7 +195,9 @@ export default function Publicar() {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
-        <div>
+        {/*
+      <div>
+          
           <label className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#5c5040] block mb-2">
             Imagen de portada (opcional)
           </label>
@@ -209,6 +211,9 @@ export default function Publicar() {
             className="text-[#a89878] font-mono text-sm"
           />
         </div>
+        */
+        }
+  
         <input
           type="text"
           placeholder="Etiquetas separadas por comas (ej: casa embrujada, niños, pueblo)"
