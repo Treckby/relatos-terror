@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { supabase } from '../lib/supabase'
 
+
 export default function RegistrarVisita() {
   const pathname = usePathname()
 
