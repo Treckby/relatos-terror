@@ -19,6 +19,8 @@ export default function Admin() {
   const [autorizado, setAutorizado] = useState<boolean | null>(null)
   const [relatos, setRelatos] = useState<Relato[]>([])
   const [cargando, setCargando] = useState(true)
+  const [totalVisitas, setTotalVisitas] = useState(0)
+  const [visitasPorPagina, setVisitasPorPagina] = useState<[string, number][]>([])
   const router = useRouter()
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export default function Admin() {
 
     setAutorizado(true)
     cargarRelatos()
+    cargarVisitas()
   }
 
   async function cargarRelatos() {
@@ -55,6 +58,19 @@ export default function Admin() {
 
     setRelatos(data || [])
     setCargando(false)
+  }
+
+   async function cargarVisitas() {
+    const { data } = await supabase
+      .from('visitas_paginas')
+      .select('pagina, contador')
+      .order('contador', { ascending: false })
+
+    const total = (data || []).reduce((sum, v) => sum + v.contador, 0)
+    setTotalVisitas(total)
+
+    const ordenado: [string, number][] = (data || []).map((v) => [v.pagina, v.contador])
+    setVisitasPorPagina(ordenado)
   }
 
   async function aprobar(id: string) {
@@ -87,9 +103,28 @@ export default function Admin() {
       <p className="font-mono text-[10px] tracking-[0.4em] uppercase text-[#7a1515] mb-3">
         Panel de control
       </p>
-      <h1 className="font-serif text-4xl italic text-[#ede5d0] mb-10">
+      <h1 className="font-serif text-4xl italic text-[#ede5d0] mb-6">
         Administrar relatos
       </h1>
+
+      <div className="inline-block border border-[#2e2518] px-6 py-4 mb-6">
+        <span className="font-serif text-3xl text-[#b02020] block">{totalVisitas.toLocaleString('es-ES')}</span>
+        <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-[#5c5040]">Visitas totales</span>
+      </div>
+
+      <div className="mb-14">
+        <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#5c5040] mb-4">
+          Visitas por página
+        </p>
+        <div className="flex flex-col gap-2">
+          {visitasPorPagina.map(([pagina, total]) => (
+            <div key={pagina} className="flex items-center justify-between border-b border-[#1f1a12] py-2">
+              <span className="font-mono text-sm text-[#a89878]">{pagina === '/' ? 'Home' : pagina}</span>
+              <span className="font-mono text-sm text-[#b8842a]">{total.toLocaleString('es-ES')}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <section className="mb-14">
         <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#b02020] mb-4">

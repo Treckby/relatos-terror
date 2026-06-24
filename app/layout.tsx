@@ -4,6 +4,7 @@ import './globals.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Particulas from './components/Particulas'
+import RegistrarVisita from './components/RegistrarVisita'
 
 export const metadata: Metadata = {
   title: 'Relatos Oscuros',
@@ -29,6 +30,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <RegistrarVisita />
         <Particulas />
         <Navbar />
         {children}
